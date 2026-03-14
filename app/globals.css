@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0c0c0f;
+  color: #e8e4dc;
+  font-family: var(--font-serif);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient glows */
+body::before {
+  content: '';
+  position: fixed;
+  top: -30%;
+  left: -20%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(ellipse, rgba(201, 169, 110, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -20%;
+  right: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(ellipse, rgba(212, 120, 138, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #13131a; }
+::-webkit-scrollbar-thumb { background: #2a2a38; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #c9a96e; }
+
+/* Date input color-scheme */
+input[type="date"],
+input[type="time"] {
+  color-scheme: dark;
+}
+
+/* ─── Light mode ─────────────────────────────────────────────────────────── */
+html.light body {
+  background-color: #faf8f4;
+  color: #1a1714;
+}
+
+html.light body::before {
+  background: radial-gradient(ellipse, rgba(201, 169, 110, 0.07) 0%, transparent 70%);
+}
+
+html.light body::after {
+  background: radial-gradient(ellipse, rgba(212, 120, 138, 0.05) 0%, transparent 70%);
+}
+
+html.light ::-webkit-scrollbar-track { background: #f0ece4; }
+html.light ::-webkit-scrollbar-thumb { background: #d4c4a8; }
+
+html.light input[type="date"],
+html.light input[type="time"] {
+  color-scheme: light;
+}
+
+/* Light mode Tailwind overrides via CSS variables */
+html.light {
+  --color-bg:          #faf8f4;
+  --color-surface:     #ffffff;
+  --color-surface2:    #f3efe8;
+  --color-border:      #e8e0d0;
+  --color-text:        #1a1714;
+  --color-text-muted:  #5a5040;
+  --color-text-dim:    #9a8c78;
+  --color-accent:      #b8935a;
+  --color-accent-soft: #f5eddd;
+  --color-green-patch: #3a8f62;
+  --color-green-soft:  #e8f5ee;
+  --color-rose-patch:  #c04060;
+  --color-rose-soft:   #fce8ec;
+}
