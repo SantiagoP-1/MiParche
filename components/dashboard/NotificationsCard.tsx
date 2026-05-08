@@ -74,15 +74,12 @@ export function NotificationsCard({ computed }: Props) {
       { date: computed.newCycle, msg: '✨ ¡Nuevo ciclo! Ponete el parche nuevo hoy.' },
     ]
 
-    // Persist schedule for future sessions
     const schedule = events.map(({ date, msg }) => ({
       timestamp: new Date(date).setHours(9, 0, 0, 0),
       msg,
     }))
     localStorage.setItem('miparche_notif_schedule', JSON.stringify(schedule))
 
-    // setTimeout only for events within the next 24h
-    // For longer-range reminders, server-side push (Web Push API) is needed — roadmap item
     for (const { date, msg } of events) {
       const notifTime = new Date(date)
       notifTime.setHours(9, 0, 0, 0)
@@ -98,7 +95,7 @@ export function NotificationsCard({ computed }: Props) {
               icon: '/icon-192.png',
               tag: 'miparche-reminder',
               renotify: true,
-            })
+            } as NotificationOptions & { renotify: boolean })
           } else {
             new Notification('Mi Parche ♡', { body: msg })
           }
@@ -108,10 +105,10 @@ export function NotificationsCard({ computed }: Props) {
   }
 
   const statusConfig: Record<PermissionState, { text: string; cls: string }> = {
-    granted:     { text: '✓ NOTIFICACIONES ACTIVADAS',                              cls: 'bg-green-soft text-green-patch' },
-    denied:      { text: '✗ PERMISO DENEGADO · Revisá la configuración',            cls: 'bg-rose-soft text-rose-patch' },
-    default:     { text: 'NOTIFICACIONES DESACTIVADAS',                             cls: 'bg-surface2 text-text-dim' },
-    unsupported: { text: 'TU NAVEGADOR NO SOPORTA NOTIFICACIONES',                  cls: 'bg-surface2 text-text-dim' },
+    granted:     { text: '✓ NOTIFICACIONES ACTIVADAS',                     cls: 'bg-green-soft text-green-patch' },
+    denied:      { text: '✗ PERMISO DENEGADO · Revisá la configuración',   cls: 'bg-rose-soft text-rose-patch' },
+    default:     { text: 'NOTIFICACIONES DESACTIVADAS',                    cls: 'bg-surface2 text-text-dim' },
+    unsupported: { text: 'TU NAVEGADOR NO SOPORTA NOTIFICACIONES',         cls: 'bg-surface2 text-text-dim' },
   }
 
   const status = enabled && permission === 'granted' ? statusConfig.granted : statusConfig[permission]
