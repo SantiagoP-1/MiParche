@@ -5,9 +5,11 @@ import { createAdminClient } from '@/lib/supabase/server'
 // PATCH /api/cycles/[id] — update notes
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSession()
+  const { id } = await params
+  const res = new NextResponse()
+  const session = await getSession(req, res)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
@@ -26,7 +28,7 @@ export async function PATCH(
   const { data, error } = await supabase
     .from('patch_cycles')
     .update({ notes, updated_at: new Date().toISOString() })
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('user_id', profile.id)
     .select()
     .single()
@@ -38,10 +40,12 @@ export async function PATCH(
 
 // DELETE /api/cycles/[id] — delete a single cycle
 export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSession()
+  const { id } = await params
+  const res = new NextResponse()
+  const session = await getSession(req, res)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const supabase = createAdminClient()
@@ -57,8 +61,8 @@ export async function DELETE(
   const { error } = await supabase
     .from('patch_cycles')
     .delete()
-    .eq('id', params.id)
-    .eq('user_id', profile.id) // ensures ownership
+    .eq('id', id)
+    .eq('user_id', profile.id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
