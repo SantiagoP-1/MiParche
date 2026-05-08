@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 
 // GET /api/cycles — get active cycle for current user
-export async function GET() {
-  const session = await getSession()
+export async function GET(req: NextRequest) {
+  const res = new NextResponse()
+  const session = await getSession(req, res)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const supabase = createAdminClient()
 
-  // Get user profile
   const { data: profile } = await supabase
     .from('user_profiles')
     .select('id')
@@ -18,7 +18,6 @@ export async function GET() {
 
   if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  // Get active cycle
   const { data: cycle, error } = await supabase
     .from('patch_cycles')
     .select('*')
@@ -37,7 +36,8 @@ export async function GET() {
 
 // POST /api/cycles — create or update cycle
 export async function POST(req: NextRequest) {
-  const session = await getSession()
+  const res = new NextResponse()
+  const session = await getSession(req, res)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
@@ -49,7 +49,6 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient()
 
-  // Get user profile
   const { data: profile } = await supabase
     .from('user_profiles')
     .select('id')
@@ -58,14 +57,12 @@ export async function POST(req: NextRequest) {
 
   if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  // Mark any existing active cycles as completed
   await supabase
     .from('patch_cycles')
     .update({ status: 'completed', updated_at: new Date().toISOString() })
     .eq('user_id', profile.id)
     .eq('status', 'active')
 
-  // Create new cycle
   const { data: newCycle, error } = await supabase
     .from('patch_cycles')
     .insert({
@@ -83,8 +80,9 @@ export async function POST(req: NextRequest) {
 }
 
 // DELETE /api/cycles — abandon current cycle
-export async function DELETE() {
-  const session = await getSession()
+export async function DELETE(req: NextRequest) {
+  const res = new NextResponse()
+  const session = await getSession(req, res)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const supabase = createAdminClient()
